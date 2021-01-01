@@ -12,6 +12,11 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0 # avoid shallow clone so NBGV can do its work
+    - name: Nerdbank.GitVersioning
+      uses: dotnet/nbgv@v0.3.1
+      with:
+        setAllVars: true
+      run: echo "NBGV_NuGetPackageVersion $NBGV_NuGetPackageVersion"
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -25,3 +30,4 @@ jobs:
       with:
           PROJECT_FILE_PATH: TestDeploy/TestDeploy.csproj
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          VERSION_STATIC: ${{ NBGV_NuGetPackageVersion }}
