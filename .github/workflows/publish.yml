@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: debug
         run: echo $NUGET_KEY
+      - name: debug2
+        run: echo $NUGET_FEED
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -30,50 +32,7 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build -c Release --no-restore
-#      - name: Test
-#        run: dotnet test -c Release
       - name: Pack
         run: dotnet pack -v minimal -c Release --no-restore --include-symbols --include-source -o nupkg TestDeploy/TestDeploy.csproj
       - name: Push to NuGet Feed
         run: dotnet nuget push ./nupkg/*.nupkg --source $NUGET_FEED --skip-duplicate --api-key $NUGET_KEY
-
-
-
-#name: Publish Packages
-#
-#on:
-#  push:
-#    branches: [ main ]
-#
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#    - name: checkout
-#      uses: actions/checkout@v2
-#      with:
-#        fetch-depth: 0 # avoid shallow clone so NBGV can do its work
-#
-#    - name: Nerdbank.GitVersioning # https://github.com/marketplace/actions/nerdbank-gitversioning
-#      uses: dotnet/nbgv@v0.3.1
-#      with:
-#        setAllVars: true # export NBGV output to environment variables
-#      env:
-#        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true' # required to allow the env vars export to work
-#
-#    - run: echo "NBGV_NuGetPackageVersion $NBGV_NuGetPackageVersion"
-#    - name: Setup .NET Core
-#      uses: actions/setup-dotnet@v1
-#      with:
-#        dotnet-version: 5.0.100
-#    - name: Install dependencies
-#      run: dotnet restore
-#    - name: Build
-#      run: dotnet build --configuration Release --no-restore
-#    - name: Publish
-#      uses: brandedoutcast/publish-nuget@v2.5.5
-#      with:
-#          PROJECT_FILE_PATH: TestDeploy/TestDeploy.csproj
-#          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-#          VERSION_STATIC: $NBGV_NuGetPackageVersion
